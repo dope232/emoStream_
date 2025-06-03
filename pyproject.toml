@@ -1,0 +1,19 @@
+[project]
+name = "emostream"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp>=3.12.7",
+    "confluent-kafka>=2.10.0",
+    "flask>=3.1.1",
+    "nest-asyncio>=1.6.0",
+    "uvloop>=0.21.0",
+]
+
+[dependency-groups]
+dev = [
+    "locust>=2.37.6",
+    "pytest>=8.4.0",
+]
