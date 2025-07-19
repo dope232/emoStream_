@@ -13,10 +13,10 @@ producer = Producer(producer_conf)
 
 def delivery_report(err, msg):
     if err is not None:
-        print(f"❌ Delivery failed: {err}")
+        print(f"Delivery failed: {err}")
     else:
         print(
-            f"✅ Delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}"
+            f" Delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}"
         )
 
 

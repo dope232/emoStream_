@@ -16,7 +16,13 @@ from pyspark.sql.functions import (
 from pyspark.sql.types import StructType, StringType, IntegerType, TimestampType
 
 
-spark = SparkSession.builder.appName("EmoSteam").master("local[*]").getOrCreate()
+spark = (
+    SparkSession.builder.appName("EmoStream")
+    .master("local[*]")
+    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.0")
+    .getOrCreate()
+)
+
 spark.sparkContext.setLogLevel("ERROR")
 
 
@@ -40,6 +46,7 @@ df_parsed = (
     df_kafka.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     .withColumn("json", from_json(col("value"), schema))
     .select("key", "json.*")
+    .withWatermark("timestamp", "10 minutes")
 )
 
 windowed_batch = df_parsed.groupBy(
@@ -48,7 +55,7 @@ windowed_batch = df_parsed.groupBy(
 
 
 scaled_batch = windowed_batch.withColumn(
-    "scaled_count", when(col("e_count") >= 25, 1).otherwise(0)
+    "scaled_count", when(col("e_count") >= 1, 1).otherwise(0)
 )
 
 
@@ -69,7 +76,8 @@ query = (
     output.writeStream.format("kafka")
     .option("kafka.bootstrap.servers", "localhost:9092")
     .option("topic", "topic2")
-    .outputMode("append")
+    .option("checkpointLocation", "/tmp/spark-checkpoints/emostream")
+    .outputMode("complete")
     .start()
 )
 
