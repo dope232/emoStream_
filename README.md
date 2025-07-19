@@ -91,8 +91,3 @@ The script will:
 Client  Flask API  Kafka (topic1)  Spark Aggregation  Kafka (topic2)  Streamlit Dashboard
 ```
 
-## Project Structure
-
-```
-emostream/
-
